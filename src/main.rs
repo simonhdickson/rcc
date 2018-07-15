@@ -4,6 +4,7 @@ extern crate clap;
 mod assembly;
 mod ast;
 mod cli;
+mod compiler_tests;
 mod lex;
 
 use std::fs::File;

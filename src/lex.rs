@@ -10,6 +10,9 @@ pub enum Token {
     SemiColon,
     Return,
     Integer,
+    Negation,
+    BitwiseComplement,
+    LogicalNegation,
     Ident(String),
     LiteralInteger(String)
 }
@@ -37,6 +40,9 @@ fn next_token(chars: &mut Peekable<Chars>) -> Option<Token> {
         Some('(') => Some(Token::LeftParenthesis),
         Some(')') => Some(Token::RightParenthesis),
         Some(';') => Some(Token::SemiColon),
+        Some('-') => Some(Token::Negation),
+        Some('~') => Some(Token::BitwiseComplement),
+        Some('!') => Some(Token::LogicalNegation),
         Some(ch @ _) => {
             if ch.is_alphabetic() {
                 let literal = read_identifier(chars, ch);
