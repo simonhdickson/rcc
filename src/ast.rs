@@ -21,7 +21,15 @@ pub enum Statement {
 
 #[derive(Debug)]
 pub enum Expression {
-    Constant(i32)
+    Constant(i32),
+    UnaryOperation(Operator, Box<Expression>)
+}
+
+#[derive(Debug)]
+pub enum Operator {
+    Complement,
+    LogicalNegation,
+    Negation
 }
 
 pub fn parse(tokens: Vec<Token>) -> Result<Program, Error> {
@@ -83,11 +91,22 @@ fn parse_statement<'a>(tokens: &mut Iterator<Item = Token>) -> Result<Statement,
 }
 
 fn parse_expression<'a>(tokens: &mut Iterator<Item = Token>) -> Result<Expression, Error> {
-    let i =
-        match tokens.next() {
-            Some(Token::LiteralInteger(i)) => Ok(i.parse::<i32>()?),
-            _ => Err(format_err!("expected integer literal")),
-        }?;
-    
-    Ok(Expression::Constant(i))
+    match tokens.next() {
+        Some(Token::LiteralInteger(i)) => Ok(Expression::Constant(i.parse::<i32>()?)),
+        Some(token) => {
+            let op = parse_operator(token)?;
+            let exp = parse_expression(tokens)?;
+            Ok(Expression::UnaryOperation(op, Box::new(exp)))
+        }
+        _ => Err(format_err!("expected expression")),
+    }
+}
+
+fn parse_operator(token: Token) -> Result<Operator, Error> {
+    match token {
+        Token::BitwiseComplement => Ok(Operator::Complement),
+        Token::LogicalNegation => Ok(Operator::LogicalNegation),
+        Token::Negation => Ok(Operator::Negation),
+        token => Err(format_err!("expected operator, got {:?}", token)),
+    }
 }
