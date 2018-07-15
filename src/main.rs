@@ -27,12 +27,12 @@ fn main() {
     let tokens = lex::parse(&content);
 
     if prints_tokens {
-        println!("{:?}", tokens);
+        println!("{:#?}", tokens);
     }
 
     let program = ast::parse(tokens).unwrap();
     if print_ast {
-        println!("{:?}", program);
+        println!("{:#?}", program);
     }
 
     let content = assembly::generate(program);
